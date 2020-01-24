@@ -3,7 +3,14 @@ import ButtonView from '@ckeditor/ckeditor5-ui/src/button/buttonview';
 
 import imageIcon from '@ckeditor/ckeditor5-core/theme/icons/image.svg';
 
-export class InsertImage extends Plugin {
+export default class InsertImage extends Plugin {
+	/**
+	 * @inheritDoc
+	 */
+	static get pluginName() {
+		return 'InsertImage';
+	}
+
 	init() {
 		const editor = this.editor;
 
@@ -18,8 +25,16 @@ export class InsertImage extends Plugin {
 
 			// Callback executed once the image is clicked.
 			view.on( 'execute', () => {
-				const event = new Event( 'insertImage' );
-				editor.dispatchEvent( event );
+				const imageUrl = prompt( 'Image URL' );
+
+				editor.model.change( writer => {
+					const imageElement = writer.createElement( 'image', {
+						src: imageUrl
+					} );
+
+					// Insert the image in the current selection location.
+					editor.model.insertContent( imageElement, editor.model.document.selection );
+				} );
 			} );
 
 			return view;
