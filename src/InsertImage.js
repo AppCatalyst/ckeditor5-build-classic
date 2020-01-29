@@ -25,19 +25,30 @@ export default class InsertImage extends Plugin {
 
 			// Callback executed once the image is clicked.
 			view.on( 'execute', () => {
-				const imageUrl = prompt( 'Image URL' );
+				this.popup().then( imageUrl => {
+					const editor = this.editor;
 
-				editor.model.change( writer => {
-					const imageElement = writer.createElement( 'image', {
-						src: imageUrl
+					editor.model.change( writer => {
+						const imageElement = writer.createElement( 'image', {
+							src: imageUrl
+						} );
+
+						// Insert the image in the current selection location.
+						editor.model.insertContent( imageElement, editor.model.document.selection );
 					} );
-
-					// Insert the image in the current selection location.
-					editor.model.insertContent( imageElement, editor.model.document.selection );
 				} );
 			} );
 
 			return view;
 		} );
+	}
+
+	popup() {
+		const msg = 'No popup adapter implemented';
+		return Promise.reject( msg );
+	}
+
+	createPopupAdapter( adapterFnPromise ) {
+		this.popup = adapterFnPromise;
 	}
 }
