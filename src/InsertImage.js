@@ -1,7 +1,12 @@
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 import ButtonView from '@ckeditor/ckeditor5-ui/src/button/buttonview';
+import Command from '@ckeditor/ckeditor5-core/src/command';
 
 import imageIcon from '@ckeditor/ckeditor5-core/theme/icons/image.svg';
+
+class InsertImageCommand extends Command {
+	execute() {}
+}
 
 export default class InsertImage extends Plugin {
 	/**
@@ -23,32 +28,14 @@ export default class InsertImage extends Plugin {
 				tooltip: true
 			} );
 
-			// Callback executed once the image is clicked.
+			editor.commands.add( 'insertImage', new InsertImageCommand( editor ) );
+
+			// // Callback executed once the image is clicked.
 			view.on( 'execute', () => {
-				this.popup().then( imageUrl => {
-					const editor = this.editor;
-
-					editor.model.change( writer => {
-						const imageElement = writer.createElement( 'image', {
-							src: imageUrl
-						} );
-
-						// Insert the image in the current selection location.
-						editor.model.insertContent( imageElement, editor.model.document.selection );
-					} );
-				} );
+				editor.execute( 'insertImage' );
 			} );
 
 			return view;
 		} );
-	}
-
-	popup() {
-		const msg = 'No popup adapter implemented';
-		return Promise.reject( msg );
-	}
-
-	createPopupAdapter( adapterFnPromise ) {
-		this.popup = adapterFnPromise;
 	}
 }
